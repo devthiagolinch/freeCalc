@@ -2,14 +2,48 @@ const express = require('express');
 const routes = express.Router();
 
 // Profile dates routes
-const profile = {
-    name: "Thiago",
-    avatar: "https://github.com/devthiagolinch.png",
-    "monthly-budget": "3000",
-    "days-per-week": "5",
-    "hours-per-day": "5",
-    "vacation-per-year": "4",
-    "value-hour": 75
+const Profile = {
+    data: {
+        name: "Thiago",
+        avatar: "https://github.com/devthiagolinch.png",
+        "monthly-budget": "3000",
+        "days-per-week": "5",
+        "hours-per-day": "5",
+        "vacation-per-year": "4",
+        "value-hour": 75
+    },
+    
+    controllers: {
+        index(req, res){
+            return res.render(views + "profile", { profile: Profile.data })
+        },
+
+        update(req, res){
+            // req.body para pegar os dados
+            const data = req.body
+
+            // definir quantas semanas tem um ano: 52 semanas
+            const weeksPerYear = 52
+
+            // remover as semanas de ferias do ano para pegar
+            // quantas semanas tem um mes
+            const weekesPerMonth = (weeksPerYear - data["vacation-per-year"]) / 12
+
+            // quantas horas por semana estou trabalhando
+            const weekTotalHours = data["hours-per-day"] * data["days-per-week"]
+
+            // total de horas trabalhadas no mes
+            const monthlyTotalHours = weekTotalHours * weekesPerMonth
+
+            // qual o valor da minha hora
+            data["value-hour"] = data["monthly-budget"] / monthlyTotalHours
+
+            Profile.data = data
+
+            return res.redirect("/profile")
+        }
+    },
+    
 };
 
 
@@ -42,11 +76,11 @@ const Job = {
                     ...job, // espalhamento JS, pegar os dados e jogar aqui dentro
                     remaining,
                     status,
-                    budget: profile['value-hour'] * job['total-hours']
+                    budget: Profile.data['value-hour'] * job['total-hours']
                 }
             })
         
-            return res.render(views + "index", { jobs:updateJobs })
+            return res.render(views + "index", { jobs: updateJobs })
 
         },
 
@@ -57,7 +91,7 @@ const Job = {
         save(req, res){
             const lastId = Job.data[Job.data.length - 1]?.id || 1;// atribuindo o valor do Id focando no array, para isso subtraio 1. Caso o objeto nao exita "?.id" ele cioloca 1 como resutlado.
 
-            jobs.push({
+            Job.data.push({
                 id: lastId + 1,
                 name: req.body.name,
                 "daily-hours": req.body["daily-hours"],
@@ -120,6 +154,7 @@ routes.get('/', Job.controllers.index)
 routes.get('/job', Job.controllers.create)
 routes.post('/job', Job.controllers.save) // rota para enviar as info do forms do novo job
 routes.get('/job/edit', (req, res) =>  res.render(views + "job-edit"))
-routes.get('/profile', (req, res) =>  res.render(views + "profile", { profile }))
+routes.get('/profile', Profile.controllers.index)
+routes.post('/profile', Profile.controllers.update)
 
 module.exports = routes;
