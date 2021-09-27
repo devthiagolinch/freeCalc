@@ -1,6 +1,11 @@
 const express = require('express');
 const routes = express.Router();
 
+
+// Vai precisar configurar uma rota para o ejs chegar no src/views
+const views = __dirname + "/views/";
+
+
 // Profile dates routes
 const Profile = {
     data: {
@@ -50,19 +55,19 @@ const Profile = {
 const Job = {
     data: [
         {
-            id: "1",
+            id: 1,
             name: "Pizzario Guloso",
             "daily-hours": 2,
             "total-hours": 1,
             createdAt: Date.now(),
         },
         {
-            id: "2",
+            id: 2,
             name: "oneTwo Projects",
             "daily-hours": 3,
             "total-hours": 47,
             createdAt: Date.now(),
-        }
+        },
     ],
     
     controllers:{
@@ -76,7 +81,7 @@ const Job = {
                     ...job, // espalhamento JS, pegar os dados e jogar aqui dentro
                     remaining,
                     status,
-                    budget: Profile.data['value-hour'] * job['total-hours']
+                    budget: Job.services.calculateBudget(job, Profile.data["value-hour"])
                 }
             })
         
@@ -86,6 +91,33 @@ const Job = {
 
         create(req,res){
             return res.render(views + "job")
+        },
+
+        update(req,res){
+            // puxa o id do job para jogar na http
+            const jobId = req.params.id
+            // busncar o job pelo id dele
+            const job = Job.data.find(job => Number(job.id) === Number(jobId))
+
+            if (!job) {
+                return res.send('Job not found')
+            }
+
+            const updatedJob = {
+                ...job,
+                name: req.body.name,
+                "total-hours": req.body["total-hours"],
+                "daily-hours": req.body["daily-hours"],
+            }
+
+            Job.data = Job.data.map(job => {
+                if (Number(job.id) === Number(jobId)) {
+                    job = updatedJob
+                }
+
+                return job
+            })
+            res.redirect("/job/" + jobId)
         },
 
         save(req, res){
@@ -99,7 +131,22 @@ const Job = {
                 createdAt: Date.now(),//atribuindo a data de hoje
             })
             return res.redirect('/')
-        }
+        },
+
+        show(req, res) {
+
+            // puxa o id do job para jogar na http
+            const jobId = req.params.id
+            // busncar o job pelo id dele
+            const job = Job.data.find(job => Number(job.id) === Number(jobId))
+            if (!job) {
+                return res.send('Job not found')
+            }
+
+            job.budget = Job.services.calculateBudget(job, Profile.data["value-hour"])
+
+            return res.render(views + "job-edit", { job })
+        },
     },
 
     services: {
@@ -133,7 +180,9 @@ const Job = {
        
                //restam x dias
                return dayDiff
-       }
+       },
+
+       calculateBudget: (job, valueHour) => valueHour * job['total-hours']
     }
 }
 
@@ -147,13 +196,11 @@ const Job = {
 //tirar a "/", o .html e o "basePath", pois ejs ja sabe e trocar "sendFile" por "render"
 // pois o ejs nao precisa do sendFile
 
-// Vai precisar configurar uma rota para o ejs chegar no src/views
-const views = __dirname + "/views/";
-
 routes.get('/', Job.controllers.index)
 routes.get('/job', Job.controllers.create)
 routes.post('/job', Job.controllers.save) // rota para enviar as info do forms do novo job
-routes.get('/job/edit', (req, res) =>  res.render(views + "job-edit"))
+routes.get('/job/:id', Job.controllers.show)
+routes.post('/job/:id', Job.controllers.update)
 routes.get('/profile', Profile.controllers.index)
 routes.post('/profile', Profile.controllers.update)
 
