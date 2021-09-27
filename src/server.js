@@ -6,6 +6,9 @@ server.set('view engine', 'ejs'); //
 
 server.use(express.static("Public"));
 
+// usaro  body no rewq.
+server.use(express.urlencoded({extended: true}))
+
 server.use(routes);
 
 
