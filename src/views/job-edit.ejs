@@ -23,15 +23,20 @@
       rel="stylesheet"
     />
 
-    <script type="module" src="scripts/job-edit.js"></script>
+    <script type="module" src="/scripts/job-edit.js"></script>
     
   </head>
   <body id="page-job-edit">
-
-    <%- include("parts/page-header", title="Editar Job") %>
+    
+    <%- include('parts/page-header', { title: 'Editar Job'}) %>
 
     <div class="container flex animate-up delay-2">
-        <form id="form-job" action="/job/<%= job.id %>" method="post">
+
+""
+        <form id="form-job" 
+        method="post"
+        action="/job/<%= job.id %>">
+
           <fieldset>
             <legend>Dados do Job</legend>
             <div class="separator light"></div>
@@ -75,7 +80,7 @@
       <aside class="card">
         <img src="/images/money-color.svg" alt="Imagem de Dinheiro">
         <p>
-          O valor do projeto ficou em <strong>R$ <%= job.budget.toFixed(2).replace('.', ',') %> </strong>
+          O valor do projeto ficou em <strong>R$ <%= job.budget.toFixed(2).replace(".", ",") %> </strong>
         </p>
         <div class="button-group">
           <button 
@@ -117,7 +122,7 @@
       </div>
       <form 
         method="post" 
-        action="/job/delete/{JOBID}" 
+        action="/job/delete/<%= job.id %>" 
         id="delete-job"></form>
     </div>
     <!-- end modal-wrapper -->

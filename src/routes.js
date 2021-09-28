@@ -51,7 +51,7 @@ const Profile = {
     
 };
 
-
+// Job informations(data | Controllers | services)
 const Job = {
     data: [
         {
@@ -121,7 +121,7 @@ const Job = {
         },
 
         save(req, res){
-            const lastId = Job.data[Job.data.length - 1]?.id || 1;// atribuindo o valor do Id focando no array, para isso subtraio 1. Caso o objeto nao exita "?.id" ele cioloca 1 como resutlado.
+            const lastId = Job.data[Job.data.length - 1]?.id || 0;// atribuindo o valor do Id focando no array, para isso subtraio 1. Caso o objeto nao exita "?.id" ele cioloca 1 como resutlado.
 
             Job.data.push({
                 id: lastId + 1,
@@ -146,6 +146,19 @@ const Job = {
             job.budget = Job.services.calculateBudget(job, Profile.data["value-hour"])
 
             return res.render(views + "job-edit", { job })
+        },
+
+        delete(req, res) {
+            // puxa o id do job para jogar na http
+            const jobId = req.params.id
+
+            // O filter tem uma function igual a do finder,
+            // porem ele ao encontrar o objeto que eu quero ele vai tirar/filtar.
+            // Se ele encontrar um objeto errado ele filtra/mantem.
+            Job.data = Job.data.filter(job => Number(job.id) !== Number(jobId))
+            // Quando esse filter for false, ou seja, job.id for igual ao jobId ele vai tirar o job.
+
+            return res.redirect('/')
         },
     },
 
@@ -199,9 +212,10 @@ const Job = {
 routes.get('/', Job.controllers.index)
 routes.get('/job', Job.controllers.create)
 routes.post('/job', Job.controllers.save) // rota para enviar as info do forms do novo job
-routes.get('/job/:id', Job.controllers.show)
-routes.post('/job/:id', Job.controllers.update)
-routes.get('/profile', Profile.controllers.index)
-routes.post('/profile', Profile.controllers.update)
+routes.get('/job/:id', Job.controllers.show) // rota para enviar as info do jobs para o job-edit com id especifica
+routes.post('/job/:id', Job.controllers.update) // rota para enviar as info do forms do job atualizado para o "db"
+routes.post('/job/delete/:id', Job.controllers.delete) // rota para enviar as info do job que sera deletado e deletar ele
+routes.get('/profile', Profile.controllers.index) // rota para enviar os dados do usuario para o profile index
+routes.post('/profile', Profile.controllers.update) // rota para enviar os dados do usuario atualizados para o "DB"
 
 module.exports = routes;
