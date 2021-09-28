@@ -3,7 +3,8 @@ const routes = express.Router();
 
 
 // Vai precisar configurar uma rota para o ejs chegar no src/views
-const views = __dirname + "/views/";
+// nao usarresmos mais essa linha pois no server resolvemos isso
+// const views = __dirname + "/views/";
 
 
 // Profile dates routes
@@ -20,7 +21,7 @@ const Profile = {
     
     controllers: {
         index(req, res){
-            return res.render(views + "profile", { profile: Profile.data })
+            return res.render("profile", { profile: Profile.data })
         },
 
         update(req, res){
@@ -85,12 +86,12 @@ const Job = {
                 }
             })
         
-            return res.render(views + "index", { jobs: updateJobs })
+            return res.render("index", { jobs: updateJobs })
 
         },
 
         create(req,res){
-            return res.render(views + "job")
+            return res.render("job")
         },
 
         update(req,res){
@@ -145,7 +146,7 @@ const Job = {
 
             job.budget = Job.services.calculateBudget(job, Profile.data["value-hour"])
 
-            return res.render(views + "job-edit", { job })
+            return res.render("job-edit", { job })
         },
 
         delete(req, res) {
