@@ -1,56 +1,12 @@
 const express = require('express');
 const routes = express.Router();
+const profileController = require('./controller/profileController')
+const Profile = require('./model/profile')
 
 
 // Vai precisar configurar uma rota para o ejs chegar no src/views
 // nao usarresmos mais essa linha pois no server resolvemos isso
 // const views = __dirname + "/views/";
-
-
-// Profile dates routes
-const Profile = {
-    data: {
-        name: "Thiago",
-        avatar: "https://github.com/devthiagolinch.png",
-        "monthly-budget": "3000",
-        "days-per-week": "5",
-        "hours-per-day": "5",
-        "vacation-per-year": "4",
-        "value-hour": 75
-    },
-    
-    controllers: {
-        index(req, res){
-            return res.render("profile", { profile: Profile.data })
-        },
-
-        update(req, res){
-            // req.body para pegar os dados
-            const data = req.body
-
-            // definir quantas semanas tem um ano: 52 semanas
-            const weeksPerYear = 52
-
-            // remover as semanas de ferias do ano para pegar
-            // quantas semanas tem um mes
-            const weekesPerMonth = (weeksPerYear - data["vacation-per-year"]) / 12
-
-            // quantas horas por semana estou trabalhando
-            const weekTotalHours = data["hours-per-day"] * data["days-per-week"]
-
-            // total de horas trabalhadas no mes
-            const monthlyTotalHours = weekTotalHours * weekesPerMonth
-
-            // qual o valor da minha hora
-            data["value-hour"] = data["monthly-budget"] / monthlyTotalHours
-
-            Profile.data = data
-
-            return res.redirect("/profile")
-        }
-    },
-    
-};
 
 // Job informations(data | Controllers | services)
 const Job = {
@@ -216,7 +172,7 @@ routes.post('/job', Job.controllers.save) // rota para enviar as info do forms d
 routes.get('/job/:id', Job.controllers.show) // rota para enviar as info do jobs para o job-edit com id especifica
 routes.post('/job/:id', Job.controllers.update) // rota para enviar as info do forms do job atualizado para o "db"
 routes.post('/job/delete/:id', Job.controllers.delete) // rota para enviar as info do job que sera deletado e deletar ele
-routes.get('/profile', Profile.controllers.index) // rota para enviar os dados do usuario para o profile index
-routes.post('/profile', Profile.controllers.update) // rota para enviar os dados do usuario atualizados para o "DB"
+routes.get('/profile', profileController.index) // rota para enviar os dados do usuario para o profile index
+routes.post('/profile', profileController.update) // rota para enviar os dados do usuario atualizados para o "DB"
 
 module.exports = routes;
