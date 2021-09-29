@@ -3,14 +3,11 @@ const jobUtils = require('../utils/jobUtils')
 const Profile = require('../model/profile')
 
 module.exports = {
-    index(req, res) {
+    async index(req, res) {
         const jobs = Job.get();
         // aqui estou pedindo ao model Profile para pegar (get) dados
-        const profile = Profile.get();
-    
-        //
-        //
-        //
+        const profile = await Profile.get();
+
         let statusCount = {
             progress: 0,
             done: 0,
