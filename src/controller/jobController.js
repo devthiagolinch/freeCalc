@@ -46,13 +46,17 @@ module.exports = {
         const jobs = Job.get()
         const lastId = jobs[jobs.length - 1]?.id || 0;// atribuindo o valor do Id focando no array, para isso subtraio 1. Caso o objeto nao exita "?.id" ele cioloca 1 como resutlado.
 
-        jobs.push({
-            id: lastId + 1,
-            name: req.body.name,
-            "daily-hours": req.body["daily-hours"],
-            "total-hours": req.body["total-hours"],
-            createdAt: Date.now(),//atribuindo a data de hoje
-        })
+        Job.create(
+            {
+                id: lastId + 1,
+                name: req.body.name,
+                "daily-hours": req.body["daily-hours"],
+                "total-hours": req.body["total-hours"],
+                createdAt: Date.now(),//atribuindo a data de hoje
+            });
+
+        
+
         return res.redirect('/')
     },
 

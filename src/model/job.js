@@ -21,12 +21,16 @@ module.exports = {
     },
 
     // aqui estou pucadno do controller os dados para fazer a atualização no array
-    update(newData) {
-        data = newData;
+    update(newJob) {
+        data = newJob;
     },
 
     // Aqui estou puxando do Controller do Job o ID necessario para fazer a action delete
     delete(id) {
         data = data.filter(job => Number(job.id) !== Number(id))
+    },
+
+    create(newJob) {
+        data.push(newJob)
     }
 }
