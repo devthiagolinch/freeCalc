@@ -3,28 +3,6 @@ const jobUtils = require('../utils/jobUtils')
 const Job = require('../model/job');
 
 module.exports = {
-    index(req, res){
-        const jobs = Job.get()
-        const updateJobs = jobs.map((job) => {
-            // ajustes do job
-            const remaining = jobUtils.restingDays(job) // para puxar de services essa function de restingDays
-            const status = remaining <= 0 ? 'done' : 'progress'
-    
-            // aqui estou pedindo ao model Profile para pegar (get) dados
-            const profile = Profile.get()
-
-            return {
-                ...job, // espalhamento JS, pegar os dados e jogar aqui dentro
-                remaining,
-                status,
-                budget: jobUtils.calculateBudget(job, profile["value-hour"])
-            }
-        })
-    
-        return res.render("index", { jobs: updateJobs })
-
-    },
-
     create(req,res){
         return res.render("job")
     },

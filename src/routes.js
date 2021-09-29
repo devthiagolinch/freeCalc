@@ -3,6 +3,7 @@ const routes = express.Router();
 const profileController = require('./controller/profileController')
 const Profile = require('./model/profile')
 const jobController = require('./controller/jobController')
+const dashboardController = require('./controller/dashboardController')
 
 // Vai precisar configurar uma rota para o ejs chegar no src/views
 // nao usarresmos mais essa linha pois no server resolvemos isso
@@ -18,7 +19,7 @@ const jobController = require('./controller/jobController')
 //tirar a "/", o .html e o "basePath", pois ejs ja sabe e trocar "sendFile" por "render"
 // pois o ejs nao precisa do sendFile
 
-routes.get('/', jobController.index)
+routes.get('/', dashboardController.index)
 routes.get('/job', jobController.create)
 routes.post('/job', jobController.save) // rota para enviar as info do forms do novo job
 routes.get('/job/:id', jobController.show) // rota para enviar as info do jobs para o job-edit com id especifica
