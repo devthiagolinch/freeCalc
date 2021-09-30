@@ -7,11 +7,43 @@ module.exports = {
         return res.render("job")
     },
 
-    update(req,res){
+    async save(req, res){
+        await Job.create({
+            name: req.body.name,
+            "daily-hours": req.body["daily-hours"],
+            "total-hours": req.body["total-hours"],
+            created_at: Date.now() //atribuindo a data de hoje
+            });
+
+        return res.redirect('/')
+    },
+
+    async show(req, res) {
+
         // puxa o id do job para jogar na http
         const jobId = req.params.id
 
-        const jobs = Job.get()
+        // aqui estou puxando do model os dados para usar aqui
+        const jobs = await Job.get()
+
+        // busncar o job pelo id dele
+        const job = jobs.find(job => Number(job.id) === Number(jobId))
+        if (!job) {
+            return res.send('Job not found')
+        }
+
+        const profile = await Profile.get()
+
+        job.budget = jobUtils.calculateBudget(job, profile["value-hour"])
+
+        return res.render("job-edit", { job })
+    },
+
+    async update(req,res){
+        // puxa o id do job para jogar na http
+        const jobId = req.params.id
+
+        const jobs = await Job.get()
 
         // busncar o job pelo id dele
         const job = jobs.find(job => Number(job.id) === Number(jobId))
@@ -37,48 +69,9 @@ module.exports = {
             return job
         })
 
-        Job.update(newJob)
+        await Job.update(newJob)
 
         res.redirect("/")
-    },
-
-    save(req, res){
-        const jobs = Job.get()
-        const lastId = jobs[jobs.length - 1]?.id || 0;// atribuindo o valor do Id focando no array, para isso subtraio 1. Caso o objeto nao exita "?.id" ele cioloca 1 como resutlado.
-
-        Job.create(
-            {
-                id: lastId + 1,
-                name: req.body.name,
-                "daily-hours": req.body["daily-hours"],
-                "total-hours": req.body["total-hours"],
-                createdAt: Date.now(),//atribuindo a data de hoje
-            });
-
-        
-
-        return res.redirect('/')
-    },
-
-    show(req, res) {
-
-        // puxa o id do job para jogar na http
-        const jobId = req.params.id
-
-        // aqui estou puxando do model os dados para usar aqui
-        const jobs = Job.get()
-
-        // busncar o job pelo id dele
-        const job = jobs.find(job => Number(job.id) === Number(jobId))
-        if (!job) {
-            return res.send('Job not found')
-        }
-
-        const profile = Profile.get()
-
-        job.budget = jobUtils.calculateBudget(job, profile["value-hour"])
-
-        return res.render("job-edit", { job })
     },
 
     delete(req, res) {

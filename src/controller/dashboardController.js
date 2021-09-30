@@ -4,7 +4,7 @@ const Profile = require('../model/profile')
 
 module.exports = {
     async index(req, res) {
-        const jobs = Job.get();
+        const jobs = await Job.get();
         // aqui estou pedindo ao model Profile para pegar (get) dados
         const profile = await Profile.get();
 
