@@ -49,8 +49,12 @@ module.exports = {
     },
 
     // Aqui estou puxando do Controller do Job o ID necessario para fazer a action delete
-    delete(id) {
-        data = data.filter(job => Number(job.id) !== Number(id))
+    async delete(id) {
+        const db = await Database()
+
+        await db.run(`DELETE FROM jobs WHERE id = ${id}`) 
+
+        await db.close()
     },
 
     async create(newJob) {

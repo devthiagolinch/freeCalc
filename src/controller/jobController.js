@@ -43,38 +43,18 @@ module.exports = {
         // puxa o id do job para jogar na http
         const jobId = req.params.id
 
-        const jobs = await Job.get()
-
-        // busncar o job pelo id dele
-        const job = jobs.find(job => Number(job.id) === Number(jobId))
-
-        if (!job) {
-            return res.send('Job not found')
-        }
-
         const updatedJob = {
-            ...job,
             name: req.body.name,
             "total-hours": req.body["total-hours"],
             "daily-hours": req.body["daily-hours"],
         }
 
-
-
-        const newJob = jobs.map(job => {
-            if (Number(job.id) === Number(jobId)) {
-                job = updatedJob
-            }
-
-            return job
-        })
-
-        await Job.update(newJob)
+        await Job.update(updatedJob, jobId)
 
         res.redirect("/")
     },
 
-    delete(req, res) {
+    async delete(req, res) {
         // puxa o id do job para jogar na http
         const jobId = req.params.id
 
@@ -85,7 +65,7 @@ module.exports = {
         // Quando esse filter for false, ou seja, job.id for igual ao jobId ele vai tirar o job.
 
         // Com a refatoração agora eu só preciso passar o id que no model será feito o resto
-        Job.delete(jobId)
+        await Job.delete(jobId)
 
         return res.redirect('/')
     },
