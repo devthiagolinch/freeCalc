@@ -19,7 +19,7 @@ module.exports = {
 
         const updateJobs = jobs.map((job) => {
             // ajustes do job
-            const remaining = jobUtils.restingDays(job) // para puxar de services essa function de restingDays
+            const remaining = jobUtils.remainingDays(job) // para puxar de services essa function de restingDays
             const status = remaining <= 0 ? 'done' : 'progress';
 
             // status = done
